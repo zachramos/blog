@@ -1,35 +1,59 @@
 package com.example.blog.controllers;
 
+import com.example.blog.Services.PostService;
+import com.example.blog.models.Post;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class PostController {
-    @RequestMapping (path = "/posts", method = RequestMethod.GET)
-    @ResponseBody
-    public String posts(){
-        return "Posts Page";
+    PostService postSvc;
+
+    public PostController(PostService postSvc) {
+        this.postSvc = postSvc;
     }
 
-    @RequestMapping (path = "/posts/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public String indPost(@PathVariable String id){
-        return "This is the page for post #"+ id;
+    //    All Posts
+    @GetMapping(path = "/posts")
+    public String posts(Model model){
+        model.addAttribute("posts", postSvc.getAllPosts());
+        return "posts/index";
     }
 
-    @RequestMapping (path = "/posts/create", method = RequestMethod.GET)
-    @ResponseBody
-    public String getCreate(){
-        return "'Create' Get Request";
+    //  Individual Post
+    @GetMapping (path = "/posts/{id}")
+    public String show(Model model, @PathVariable long id){
+        model.addAttribute("post", postSvc.getPost(id));
+        return "posts/show";
     }
 
-    @RequestMapping(path = "/posts/create", method = RequestMethod.POST)
-    @ResponseBody
-    public String createPost(){
-        return "Create a new post";
+    //    Create a post
+    @GetMapping (path = "/posts/create")
+    public String getCreate(Model model){
+        model.addAttribute("post", new Post());
+        return "posts/create";
+    }
+
+    @PostMapping(path = "/posts/create")
+    public String createPost(@ModelAttribute Post post){
+        postSvc.save(post);
+        return "redirect:/posts";
+    }
+
+    //    Editing a post
+    @GetMapping(path = "/posts/{id}/edit")
+    public String getEdit(Model model, @PathVariable long id){
+        model.addAttribute("post", postSvc.getPost(id));
+        return "/posts/edit";
+    }
+
+    @PostMapping(path = "/posts/edit")
+    public String handleEdit(@ModelAttribute Post post){
+        Post e = postSvc.getPost(post.getId());
+        e.setTitle(post.getTitle());
+        e.setBody(post.getBody());
+        return "redirect:/posts";
     }
 
 }
