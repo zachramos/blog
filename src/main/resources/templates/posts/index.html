@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="partials/header :: header(Home)">
-</head>
+<head th:replace="partials/header :: header(Home)"></head>
 <body>
 <div th:replace="partials/navbar :: navbar "></div>
 
 <div class="container">
-    <h1>Here are all the posts</h1>
+    <h1 class="text-center">Zach's Blog</h1>
     <div class="post" th:each="post : ${posts}">
-        <h1 th:text="${post.title}"></h1>
-        <p th:text="${post.body}"></p>
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2 post">
+                <a th:href="@{/posts/{id}(id=${post.id})}">
+                    <div class="post-card">
+                        <h1 class="post-header" th:text="${post.title}"></h1>
+                        <p class="post-body" th:text="${post.body}"></p>
+                        <!--<p class="post-user" style="font-size: 1.5em;">By: <span th:text="${post.user.username}"></span></p>-->
+                    </div>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
 
 <div th:replace="partials/footer :: footer"></div>
+<!--<script src="/index.js"></script>-->
 
 </body>
 </html>
